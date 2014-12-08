@@ -62,17 +62,34 @@ import collections
 #
 #------------------------------------------------------------------------------
 class Engine:
-    """Engine is the simulator engine."""
+    """Engine is the simulator engine.
+    """
 
     #--------------------------------------------------------------------------
     def __init__(self):
-        self.simTime  = 0
-        self.runQ     = collections.defaultdict(list)
-        self.waitQ    = collections.defaultdict(list)
-        self.runEvent = None
+        """ Engine initialization method.
+        
+        >>> eng = Engine()
+        >>> eng.simTime
+        0
+        >>> eng.runQ
+        defaultdict(<type 'list'>, {})
+        >>> eng.waitQ
+        defaultdict(<type 'list'>, {})
+        >>> eng.runEv
+        """
+        self.simTime = 0
+        self.runQ    = collections.defaultdict(list)
+        self.waitQ   = collections.defaultdict(list)
+        self.runEv   = None
 
     #--------------------------------------------------------------------------
     def addEvent(self, ev):
+        """ Add a new event to the engine.
+        
+        :type ev: event.Event
+        :param ev: Event to be added to the engine
+        """
         self.runQ[ev.time].append(ev)
 
     #--------------------------------------------------------------------------
@@ -82,21 +99,24 @@ class Engine:
             return False
         keys = self.runQ.keys()
         keys.sort()
-        self.runEvent = self.runQ[keys[0]]
+        self.runEv = self.runQ[keys[0]]
         del self.runQ[keys[0]]
         return True
 
     #--------------------------------------------------------------------------
-    def runEvent(self):
-        """Run every event in the list of uvents ready to run."""
-        if self.runEvent:
-            self.simTime = self.runEvent[0].time
-            map(self.runEvent.run, self.runEvent)
+    def runEv(self):
+        """Run every event in the list of events ready to run.
+        """
+        if self.runEv:
+            self.simTime = self.runEv[0].time
+            map(self.runEv.run, self.runEv)
 
     #--------------------------------------------------------------------------
     def engine(self):
+        """ Run the full engine.
+        """
         while self.nextEvent():
-            self.runEvent()
+            self.runEv()
 
 
 ###############################################################################
@@ -109,4 +129,5 @@ class Engine:
 ###############################################################################
 #
 if __name__ == '__main__':
-    pass
+    import doctest
+    doctest.testmod()

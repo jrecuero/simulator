@@ -61,10 +61,25 @@ __docformat__ = 'restructuredtext en'
 #
 #------------------------------------------------------------------------------
 class Event:
-    """Event contains information regarding any simulation event."""
+    """Event contains information regarding any simulation event.
+    """
 
     #--------------------------------------------------------------------------
     def __init__(self, name, time, cb, cbArgs):
+        """ Event initialization method.
+        
+        :type name: string
+        :param name: Event name
+        
+        :type time: int
+        :param time: Simulation time when event should run
+        
+        :type cb: function
+        :param cb: Event callback
+        
+        :type cbArgs: list
+        :param cbArgs: Event callback parameters to be used
+        """
         self.name    = name
         self.time    = time
         self.cb      = cb
@@ -72,6 +87,8 @@ class Event:
 
     #--------------------------------------------------------------------------
     def run(self):
+        """ Run event.
+        """
         self.cb(self.cbArgs)
 
 
@@ -85,4 +102,5 @@ class Event:
 ###############################################################################
 #
 if __name__ == '__main__':
-    pass
+    import doctest
+    doctest.testmod()
