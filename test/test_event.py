@@ -1,6 +1,11 @@
-#! /usr/bin/env python
+'''
+Created on Dec 8, 2014
 
-"""event.py class required for the engine event.
+@author: jrecuero
+'''
+
+
+"""test_event.py class for testing the engine event.
 
 :author:    Jose Carlos Recuero
 :version:   0.1
@@ -21,31 +26,13 @@ __docformat__ = 'restructuredtext en'
 #
 # import std python modules
 #
+import unittest
+import mock
 
 #
 # import engine python modules
 #
-
-
-###############################################################################
-##
-##   ___ ___  _ __  ___| |_ __ _ _ __ | |_ ___
-##  / __/ _ \| '_ \/ __| __/ _` | '_ \| __/ __|
-## | (_| (_) | | | \__ \ || (_| | | | | |_\__ \
-##  \___\___/|_| |_|___/\__\__,_|_| |_|\__|___/
-##
-###############################################################################
-#
-
-###############################################################################
-##            _                     _   _
-##  ___ _   _| |__  _ __ ___  _   _| |_(_)_ __   ___  ___
-## / __| | | | '_ \| '__/ _ \| | | | __| | '_ \ / _ \/ __|
-## \__ \ |_| | |_) | | | (_) | |_| | |_| | | | |  __/\__ \
-## |___/\__,_|_.__/|_|  \___/ \__,_|\__|_|_| |_|\___||___/
-##
-###############################################################################
-#
+import event
 
 
 ###############################################################################
@@ -60,36 +47,36 @@ __docformat__ = 'restructuredtext en'
 
 #
 #------------------------------------------------------------------------------
-class Event:
-    """Event contains information regarding any simulation event.
-    """
+class Test(unittest.TestCase):
+    
+    #--------------------------------------------------------------------------
+    def setUp(self):
+        self.evCb = mock.Mock()
+        self.ev   = event.Event('test event', 100, self.evCb, (0, 1, 2))
 
     #--------------------------------------------------------------------------
-    def __init__(self, name, time, cb, cbArgs):
-        """ Event initialization method.
-        
-        :type name: string
-        :param name: Event name
-        
-        :type time: int
-        :param time: Simulation time when event should run
-        
-        :type cb: function
-        :param cb: Event callback
-        
-        :type cbArgs: list
-        :param cbArgs: Event callback parameters to be used
-        """
-        self.name    = name
-        self.time    = time
-        self.cb      = cb
-        self.cbArgs  = cbArgs
+    def tearDown(self):
+        self.ev = None
 
     #--------------------------------------------------------------------------
-    def run(self):
-        """ Run event.
+    def test_init(self):
+        """ Test Event.__init__ method with standard parameters
         """
-        self.cb(*self.cbArgs)
+        # Expectations
+        self.assertEqual(self.ev.name, 'test event', 'test event name error')
+        self.assertEqual(self.ev.time, 100, 'test event simulation time error')
+        self.assertEqual(self.ev.cb, self.evCb, 'test event callback error')
+        self.assertEqual(self.ev.cbArgs, (0, 1, 2), 'test event callback error')
+
+    #--------------------------------------------------------------------------
+    def test_run(self):
+        """ Test Event.run method with standard behavior
+        """
+        # Test
+        self.ev.run()
+        
+        # Expectations
+        self.evCb.assert_called_once_with(0, 1, 2)
 
 
 ###############################################################################
@@ -101,6 +88,6 @@ class Event:
 ##
 ###############################################################################
 #
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()
+if __name__ == "__main__":
+    #import sys;sys.argv = ['', 'Test.testName']
+    unittest.main()
