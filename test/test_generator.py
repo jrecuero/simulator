@@ -1,10 +1,10 @@
 #! /usr/bin/env python
 
-"""test_event.py class for testing the engine event.
+"""test_generator.py class for testing the event generator.
 
 :author:    Jose Carlos Recuero
 :version:   0.1
-:since:     12/07/2014
+:since:     12/09/2014
 
 """
 
@@ -27,8 +27,8 @@ import mock
 #
 # import engine python modules
 #
-import event
-
+import engine
+import generator
 
 ###############################################################################
 ##       _                     _       __ _       _ _   _
@@ -43,36 +43,30 @@ import event
 #
 #------------------------------------------------------------------------------
 class Test(unittest.TestCase):
-    
-    #--------------------------------------------------------------------------
-    def setUp(self):
-        self.evCb = mock.Mock()
-        self.ev   = event.Event('test event', 100, self.evCb, 0, 1, 2)
 
     #--------------------------------------------------------------------------
+    def setUp(self):
+        self.cb  = mock.Mock()
+        self.eng = engine.Engine()
+        self.gen = generator.Generator(self.eng, 'test-gen', cb=self.cb, limit=10)
+        
+    #--------------------------------------------------------------------------
     def tearDown(self):
-        self.ev = None
+        pass
 
     #--------------------------------------------------------------------------
     def test_init(self):
-        """ Test Event.__init__ method with standard parameters
-        """
-        # Expectations
-        self.assertEqual(self.ev.name, 'test event', 'test event name error')
-        self.assertEqual(self.ev.time, 100, 'test event simulation time error')
-        self.assertEqual(self.ev.cb, self.evCb, 'test event callback error')
-        self.assertEqual(self.ev.cbArgs, (0, 1, 2), 'test event callback error')
+        pass
 
     #--------------------------------------------------------------------------
     def test_run(self):
-        """ Test Event.run method with standard behavior
-        """
         # Test
-        self.ev.run()
+        self.gen.next()
+        self.eng.runEngine()
         
         # Expectations
-        self.evCb.assert_called_once_with(0, 1, 2)
-
+        self.assertEqual(self.cb.call_count, 10, 'callback was not called 10 times')
+        
 
 ###############################################################################
 ##                  _

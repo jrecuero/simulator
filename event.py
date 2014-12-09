@@ -65,7 +65,7 @@ class Event:
     """
 
     #--------------------------------------------------------------------------
-    def __init__(self, name, time, cb, cbArgs):
+    def __init__(self, name, time, cb, *cbArgs):
         """ Event initialization method.
         
         :type name: string

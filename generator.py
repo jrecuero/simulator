@@ -1,10 +1,10 @@
 #! /usr/bin/env python
 
-"""engine.py class required for the engine.
+"""generator.py class generates events.
 
 :author:    Jose Carlos Recuero
 :version:   0.1
-:since:     12/07/2014
+:since:     12/09/2014
 
 """
 
@@ -21,11 +21,12 @@ __docformat__ = 'restructuredtext en'
 #
 # import std python modules
 #
-import collections
+import random
 
 #
 # import engine python modules
 #
+import event
 
 
 ###############################################################################
@@ -61,63 +62,67 @@ import collections
 
 #
 #------------------------------------------------------------------------------
-class Engine:
-    """Engine is the simulator engine.
+class Generator:
+    """ Generates random events.
     """
 
     #--------------------------------------------------------------------------
-    def __init__(self):
-        """ Engine initialization method.
+    def __init__(self, engine, name, cb=None, cbArgs=None, timeStart=1, timeEnd=100, limit=None):
+        """ Generator initialization method.
+        """
+        self.engine    = engine
+        self.counter   = 0
+        self.name      = name
+        self.timeStart = timeStart
+        self.timeEnd   = timeEnd
+        self.limit     = limit
+        self.cb        = cb
+        self.cbArgs    = cbArgs if cbArgs else ()
         
-        >>> eng = Engine()
-        >>> eng.simTime
-        0
-        >>> eng.runQ
-        defaultdict(<type 'list'>, {})
-        >>> eng.waitQ
-        defaultdict(<type 'list'>, {})
-        >>> eng.runEv
-        """
-        self.simTime = 0
-        self.runQ    = collections.defaultdict(list)
-        self.waitQ   = collections.defaultdict(list)
-        self.runEv   = None
-
     #--------------------------------------------------------------------------
-    def addEvent(self, ev):
-        """ Add a new event to the engine.
+    def _getName(self):
+        """ Get name for a new generator event.
+        """
+        return '%s[%d]' % (self.name, self.counter)
         
-        :type ev: event.Event
-        :param ev: Event to be added to the engine
-        """
-        self.runQ[ev.time].append(ev)
-
     #--------------------------------------------------------------------------
-    def nextEvent(self):
-        """Look for the first entry in the list of pending event to be executed."""
-        if len(self.runQ) == 0:
-            return False
-        keys = self.runQ.keys()
-        keys.sort()
-        self.runEv = self.runQ[keys[0]]
-        del self.runQ[keys[0]]
-        return True
-
-    #--------------------------------------------------------------------------
-    def runEv(self):
-        """Run every event in the list of events ready to run.
+    def _getTime(self):
+        """ Get timeout for a new generator event.
         """
-        if self.runEv:
-            self.simTime = self.runEv[0].time
-            map(self.runEv.run, self.runEv)
-
+        return random.randint(self.timeStart, self.timeEnd)
+        
     #--------------------------------------------------------------------------
-    def runEngine(self):
-        """ Run the full engine.
+    def _checkLimit(self):
+        """ Check if event limit has been reached.
         """
-        while self.nextEvent():
-            for ev in self.runEv:
-                ev.run()
+        return self.limit and self.counter < self.limit
+                
+    #--------------------------------------------------------------------------
+    def _createEvent(self):
+        ev = event.Event(self._getName(), self._getTime(), self.next)
+        print 'Generator : event : %s : %s' % (ev.name, ev.time)
+        self.engine.addEvent(ev)
+        self.counter += 1
+                
+    #--------------------------------------------------------------------------
+    def _call(self):
+        if self.cb:
+            self.cb(*self.cbArgs)
+                
+    #--------------------------------------------------------------------------
+    def start(self):
+        if not self.counter:
+            self._createEvent()
+                
+    #--------------------------------------------------------------------------
+    def next(self):
+        """ Generate a new event.
+        """
+        if self._checkLimit():
+            self._createEvent()
+            self._call()
+        else:
+            print '%s has reached the maximum number of events' % (self.name, )
 
 
 ###############################################################################
