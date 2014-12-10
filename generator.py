@@ -26,6 +26,7 @@ import random
 #
 # import engine python modules
 #
+import loggerator
 import event
 
 
@@ -78,6 +79,7 @@ class Generator:
         self.limit     = limit
         self.cb        = cb
         self.cbArgs    = cbArgs if cbArgs else ()
+        self.logger    = loggerator.getLoggerator('GENERATOR')
         
     #--------------------------------------------------------------------------
     def _getName(self):
@@ -100,7 +102,7 @@ class Generator:
     #--------------------------------------------------------------------------
     def _createEvent(self):
         ev = event.Event(self._getName(), self._getTime(), self.next)
-        print 'Generator : event : %s : %s' % (ev.name, ev.time)
+        self.logger.info('Generator : event : %s : %s' % (ev.name, ev.time))
         self.engine.addEvent(ev)
         self.counter += 1
                 
@@ -122,7 +124,7 @@ class Generator:
             self._createEvent()
             self._call()
         else:
-            print '%s has reached the maximum number of events' % (self.name, )
+            self.logger.warning('%s has reached the maximum number of events' % (self.name, ))
 
 
 ###############################################################################

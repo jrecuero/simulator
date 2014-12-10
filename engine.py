@@ -26,6 +26,7 @@ import collections
 #
 # import engine python modules
 #
+import loggerator
 
 
 ###############################################################################
@@ -82,14 +83,16 @@ class Engine:
         self.runQ    = collections.defaultdict(list)
         self.waitQ   = collections.defaultdict(list)
         self.runEv   = None
+        self.logger  = loggerator.getLoggerator('ENGINE')
 
     #--------------------------------------------------------------------------
-    def addEvent(self, ev):
+    def addEvent(self, ev, fixTime=False):
         """ Add a new event to the engine.
         
         :type ev: event.Event
         :param ev: Event to be added to the engine
         """
+        ev.time = ev.time if fixTime else ev.time + self.simTime
         self.runQ[ev.time].append(ev)
 
     #--------------------------------------------------------------------------
@@ -104,7 +107,7 @@ class Engine:
         return True
 
     #--------------------------------------------------------------------------
-    def runEv(self):
+    def runEvent(self):
         """Run every event in the list of events ready to run.
         """
         if self.runEv:
@@ -117,6 +120,8 @@ class Engine:
         """
         while self.nextEvent():
             for ev in self.runEv:
+                self.simTime = ev.time
+                self.logger.info('Engine : run : %s : simtime:%s' % (ev.name, self.simTime))
                 ev.run()
 
 
