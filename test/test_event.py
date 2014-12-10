@@ -43,11 +43,11 @@ import event
 #
 #------------------------------------------------------------------------------
 class Test(unittest.TestCase):
-    
+
     #--------------------------------------------------------------------------
     def setUp(self):
         self.evCb = mock.Mock()
-        self.ev   = event.Event('test event', 100, self.evCb, 0, 1, 2)
+        self.ev   = event.Event('test event', 100.0, self.evCb, 0, 1, 2)
 
     #--------------------------------------------------------------------------
     def tearDown(self):
@@ -59,7 +59,7 @@ class Test(unittest.TestCase):
         """
         # Expectations
         self.assertEqual(self.ev.name, 'test event', 'test event name error')
-        self.assertEqual(self.ev.time, 100, 'test event simulation time error')
+        self.assertEqual(self.ev.time, 100.0, 'test event simulation time error')
         self.assertEqual(self.ev.cb, self.evCb, 'test event callback error')
         self.assertEqual(self.ev.cbArgs, (0, 1, 2), 'test event callback error')
 
@@ -69,7 +69,7 @@ class Test(unittest.TestCase):
         """
         # Test
         self.ev.run()
-        
+
         # Expectations
         self.evCb.assert_called_once_with(0, 1, 2)
 

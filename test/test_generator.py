@@ -49,7 +49,7 @@ class Test(unittest.TestCase):
         self.cb  = mock.Mock()
         self.eng = engine.Engine()
         self.gen = generator.Generator(self.eng, 'test-gen', cb=self.cb, limit=10)
-        
+
     #--------------------------------------------------------------------------
     def tearDown(self):
         pass
@@ -63,10 +63,10 @@ class Test(unittest.TestCase):
         # Test
         self.gen.next()
         self.eng.runEngine()
-        
+
         # Expectations
         self.assertEqual(self.cb.call_count, 10, 'callback was not called 10 times')
-        
+
 
 ###############################################################################
 ##                  _

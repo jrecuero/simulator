@@ -63,12 +63,26 @@ __docformat__ = 'restructuredtext en'
 class Tasker(object):
     """ Keeps information for a given task to be executed by a servicer.
     """
-    
+
     #--------------------------------------------------------------------------
     def __init__(self, name, time):
         self.name = name
         self.time = time
-        
+        self.stats = {'pushedAt': None,
+                      'popedAt': None,
+                      'tasksAtPush': None,
+                      'tasksAtPop': None}
+
+    #--------------------------------------------------------------------------
+    def push(self, queue, engine):
+        self.stats['tasksAtPush'] = queue.size()
+        self.stats['pushedAt']    = engine.getSimTime()
+
+    #--------------------------------------------------------------------------
+    def pop(self, queue, engine):
+        self.stats['tasksAtPop'] = queue.size()
+        self.stats['popedAt']    = engine.getSimTime()
+
 
 ###############################################################################
 ##                  _

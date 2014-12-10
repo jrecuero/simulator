@@ -1,10 +1,10 @@
 #! /usr/bin/env python
 
-"""test_event.py class for testing the engine event.
+"""test_simulator.py class for testing the simulator.
 
 :author:    Jose Carlos Recuero
 :version:   0.1
-:since:     12/07/2014
+:since:     12/10/2014
 
 """
 
@@ -22,13 +22,16 @@ __docformat__ = 'restructuredtext en'
 # import std python modules
 #
 import unittest
-import mock
+#import mock
 
 #
 # import engine python modules
 #
-import engine
-import event
+from engine                     import Engine
+from device.tasker_generator    import TaskerGenerator
+from device.queuer              import Queuer
+from device.servicer            import Servicer
+
 
 ###############################################################################
 ##       _                     _       __ _       _ _   _
@@ -46,12 +49,15 @@ class Test(unittest.TestCase):
 
     #--------------------------------------------------------------------------
     def setUp(self):
-        self.eng = engine.Engine()
-        self.events = {}
-        for i in xrange(5):
-            ev = event.Event('%s' % i, i+1, mock.Mock(), i+1)
-            self.events[i+1] = ev
-            self.eng.addEvent(ev)
+        self.eng = Engine()
+        self.que = Queuer()
+        self.gen = TaskerGenerator(self.eng,
+                                   'taskerGen',
+                                   self.que,
+                                   taskStart=50.0,
+                                   taskEnd=200.0,
+                                   limit=10)
+        self.svc = Servicer(self.que, self.eng)
 
     #--------------------------------------------------------------------------
     def tearDown(self):
@@ -64,12 +70,12 @@ class Test(unittest.TestCase):
     #--------------------------------------------------------------------------
     def test_run(self):
         # Test
+        self.gen.start()
+        self.svc.start()
         self.eng.runEngine()
 
         # Expectations
-        for i, ev in self.events.iteritems():
-            ev.cb.assert_called_once_with(i)
-
+        pass
 
 
 ###############################################################################

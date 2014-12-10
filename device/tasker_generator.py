@@ -69,26 +69,48 @@ class TaskerGenerator(generator.Generator):
     """
 
     #--------------------------------------------------------------------------
-    def __init__(self, engine, name, queue, timeStart=1, timeEnd=100, limit=None, taskStart=1, taskEnd=100):
+    def __init__(self,
+                 engine,
+                 name,
+                 queue,
+                 timeStart=1.0,
+                 timeEnd=100.0,
+                 limit=None,
+                 taskStart=1.0,
+                 taskEnd=100.0):
         """ Generator initialization method.
         """
-        super(TaskerGenerator, self).__init__(engine, 
-                                              name, 
-                                              cb=self._taskerEvent, 
+        super(TaskerGenerator, self).__init__(engine,
+                                              name,
+                                              cb=self._taskerEvent,
                                               timeStart=timeStart,
                                               timeEnd=timeEnd,
                                               limit=limit)
         self.queue     = queue
         self.taskStart = taskStart
         self.taskEnd   = taskEnd
+        self.taskId    = 0
         self.logger    = loggerator.getLoggerator('TASK_GEN')
 
     #--------------------------------------------------------------------------
+    def _getTaskName(self):
+        """ Get name for a new generator task.
+        """
+        return 'task:%s[%d]' % (self.name, self.taskId)
+
+    #--------------------------------------------------------------------------
+    def _getTaskTime(self):
+        """ Get task service time.
+        """
+        return random.randint(self.taskStart, self.taskEnd)
+
+    #--------------------------------------------------------------------------
     def _taskerEvent(self):
-        task = tasker.Tasker('task:%s[%d]' % (self.name, self.counter), 
-                             random.randint(self.taskStart, self.taskEnd))
+        task = tasker.Tasker(self._getTaskName(), self._getTaskTime())
+        task.push(self.queue, self.engine)
         self.queue.push(task)
-        
+        self.taskId += 1
+
 
 ###############################################################################
 ##                  _

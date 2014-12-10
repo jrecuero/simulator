@@ -29,6 +29,7 @@ import unittest
 #
 from device.queuer import Queuer
 
+
 ###############################################################################
 ##       _                     _       __ _       _ _   _
 ##   ___| | __ _ ___ ___    __| | ___ / _(_)_ __ (_) |_(_) ___  _ __  ___
@@ -46,7 +47,7 @@ class Test(unittest.TestCase):
     #--------------------------------------------------------------------------
     def setUp(self):
         self.q = Queuer()
-        
+
     #--------------------------------------------------------------------------
     def tearDown(self):
         pass
@@ -60,12 +61,11 @@ class Test(unittest.TestCase):
         # Test
         for x in xrange(10):
             self.q.push(x)
-        
+
         # Expectations
         self.assertEqual(self.q.size(), 10, 'there are not 10 elements in the queue')
         for x in xrange(10):
             self.assertEqual(self.q.pop(), x, 'element removed is not "%s"' % (x, ))
-        
 
 
 ###############################################################################

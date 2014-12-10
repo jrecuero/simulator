@@ -68,7 +68,14 @@ class Generator(object):
     """
 
     #--------------------------------------------------------------------------
-    def __init__(self, engine, name, cb=None, cbArgs=None, timeStart=1, timeEnd=100, limit=None):
+    def __init__(self,
+                 engine,
+                 name,
+                 cb=None,
+                 cbArgs=None,
+                 timeStart=1.0,
+                 timeEnd=100.0,
+                 limit=None):
         """ Generator initialization method.
         """
         self.engine    = engine
@@ -80,42 +87,42 @@ class Generator(object):
         self.cb        = cb
         self.cbArgs    = cbArgs if cbArgs else ()
         self.logger    = loggerator.getLoggerator('GENERATOR')
-        
+
     #--------------------------------------------------------------------------
     def _getName(self):
         """ Get name for a new generator event.
         """
         return '%s[%d]' % (self.name, self.counter)
-        
+
     #--------------------------------------------------------------------------
     def _getTime(self):
         """ Get timeout for a new generator event.
         """
         return random.randint(self.timeStart, self.timeEnd)
-        
+
     #--------------------------------------------------------------------------
     def _checkLimit(self):
         """ Check if event limit has been reached.
         """
         return self.limit and self.counter < self.limit
-                
+
     #--------------------------------------------------------------------------
     def _createEvent(self):
         ev = event.Event(self._getName(), self._getTime(), self.next)
-        self.logger.info('Generator : event : %s : %s' % (ev.name, ev.time))
+        self.logger.info('Generator : event : %s in %s' % (ev.name, ev.time))
         self.engine.addEvent(ev)
         self.counter += 1
-                
+
     #--------------------------------------------------------------------------
     def _call(self):
         if self.cb:
             self.cb(*self.cbArgs)
-                
+
     #--------------------------------------------------------------------------
     def start(self):
         if not self.counter:
             self._createEvent()
-                
+
     #--------------------------------------------------------------------------
     def next(self):
         """ Generate a new event.

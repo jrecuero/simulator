@@ -69,7 +69,7 @@ class Engine(object):
     #--------------------------------------------------------------------------
     def __init__(self):
         """ Engine initialization method.
-        
+
         >>> eng = Engine()
         >>> eng.simTime
         0
@@ -86,9 +86,13 @@ class Engine(object):
         self.logger  = loggerator.getLoggerator('ENGINE')
 
     #--------------------------------------------------------------------------
+    def getSimTime(self):
+        return self.simTime
+
+    #--------------------------------------------------------------------------
     def addEvent(self, ev, fixTime=False):
         """ Add a new event to the engine.
-        
+
         :type ev: event.Event
         :param ev: Event to be added to the engine
         """
@@ -121,7 +125,7 @@ class Engine(object):
         while self.nextEvent():
             for ev in self.runEv:
                 self.simTime = ev.time
-                self.logger.info('Engine : run : %s : simtime:%s' % (ev.name, self.simTime))
+                self.logger.info('Engine : run : %s at simtime:%s' % (ev.name, self.simTime))
                 ev.run()
 
 

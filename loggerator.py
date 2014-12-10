@@ -258,10 +258,10 @@ _loggerDB = {}
     request a logger, it returns the already created instance.
 """
 
-_useColors = False
+_useColors = True
 """
     :type: bool
-    
+
     This module variable controls globally if colors should be used or not.
 """
 
@@ -293,7 +293,7 @@ def getLoggerator(name, color=(BOLD_ON + FG_WHITE)):
     :return: Create a new loggerator instance if there is not anyone for the
         given component, or return the one previously created.
     """
-    if not name in _loggerDB:
+    if name not in _loggerDB:
         _loggerDB[name] = Loggerator(name, color)
     return _loggerDB[name]
 
@@ -356,11 +356,11 @@ class Loggerator(object):
         self.defaultColor['info']    = (('FG', 'BLUE'), )
         self.defaultColor['warning'] = (('FG', 'RED'), )
         self.defaultColor['error']   = (('FG', 'WHITE'), ('BG', 'RED'))
-        
+
     # =========================================================================
     def _useColor(self):
         """ Check Operating System in order to use escape codes for colors.
-        
+
         If OS is windows, escape codes can not be used, so they should not be
         included. Lynux and MacOS can accept those codes.
         """

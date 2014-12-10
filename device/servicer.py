@@ -25,6 +25,8 @@ __docformat__ = 'restructuredtext en'
 #
 # import engine python modules
 #
+import loggerator
+import event
 
 
 ###############################################################################
@@ -60,7 +62,42 @@ __docformat__ = 'restructuredtext en'
 
 #
 #------------------------------------------------------------------------------
+class Servicer(object):
+    """ Service tasks stored in a queue.
+    """
+
     #--------------------------------------------------------------------------
+    def __init__(self, queue, engine):
+        self.queue  = queue
+        self.engine = engine
+        self.busy   = False
+        self.logger = loggerator.getLoggerator('SERVICER')
+
+    #--------------------------------------------------------------------------
+    def _startService(self):
+        if not self.busy and self.queue.size():
+            task = self.queue.pop()
+            task.pop(self.queue, self.engine)
+            ev = event.Event('task:%s' % (task.name, ), task.time, self._endService, task)
+            self.engine.addEvent(ev)
+            self.busy = True
+            self.logger.info('Servicer : START : task : %s for %s' % (task.name, task.time))
+
+    #--------------------------------------------------------------------------
+    def _endService(self, task):
+        self.busy = False
+        self.logger.info('Servicer : END : task : %s for %s' % (task.name, task.time))
+        self.update()
+
+    #--------------------------------------------------------------------------
+    def start(self):
+        self.queue.registerPushCb(self.update)
+        self.update()
+
+    #--------------------------------------------------------------------------
+    def update(self):
+        self._startService()
+
 
 ###############################################################################
 ##                  _

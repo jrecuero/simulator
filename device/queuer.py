@@ -65,24 +65,40 @@ import collections
 class Queuer(object):
     """ Stores tasks.
     """
-    
+
     #--------------------------------------------------------------------------
     def __init__(self, maxLength=None):
-        self.queue = collections.deque([], maxLength)
-    
+        self.queue  = collections.deque([], maxLength)
+        self.pushCb = []
+
     #--------------------------------------------------------------------------
     def push(self, task):
         self.queue.append(task)
-    
+        self._callPushCb()
+
     #--------------------------------------------------------------------------
     def pop(self):
         return self.queue.popleft()
-    
+
     #--------------------------------------------------------------------------
     def size(self):
         return len(self.queue)
-        
-        
+
+    #--------------------------------------------------------------------------
+    def registerPushCb(self, cb, *cbArgs):
+        cbDict = {'cb': cb, 'cbArgs': cbArgs}
+        self.pushCb.append(cbDict)
+
+    #--------------------------------------------------------------------------
+    def deregisterPushCb(self, cb):
+        self.pushCb = [x for x in self.pushCb if x['cb'] != cb]
+
+    #--------------------------------------------------------------------------
+    def _callPushCb(self):
+        for cb in self.pushCb:
+            cb['cb'](*cb['cbArgs'])
+
+
 ###############################################################################
 ##                  _
 ##  _ __ ___   __ _(_)_ __

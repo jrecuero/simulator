@@ -67,16 +67,16 @@ class Event(object):
     #--------------------------------------------------------------------------
     def __init__(self, name, time, cb, *cbArgs):
         """ Event initialization method.
-        
+
         :type name: string
         :param name: Event name
-        
+
         :type time: int
         :param time: Simulation time when event should run
-        
+
         :type cb: function
         :param cb: Event callback
-        
+
         :type cbArgs: list
         :param cbArgs: Event callback parameters to be used
         """
