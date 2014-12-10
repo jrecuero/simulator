@@ -55,7 +55,7 @@ class Test(unittest.TestCase):
 
     #--------------------------------------------------------------------------
     def test_init(self):
-        """ Test Event.__init__ method with standard parameters
+        """ Test Event.servicer method with standard parameters
         """
         # Expectations
         self.assertEqual(self.ev.name, 'test event', 'test event name error')

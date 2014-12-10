@@ -62,7 +62,7 @@ import loggerator
 
 #
 #------------------------------------------------------------------------------
-class Engine:
+class Engine(object):
     """Engine is the simulator engine.
     """
 

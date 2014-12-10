@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-"""generator.py class generates events.
+"""queuer.py class stores task to be served by the servicer.
 
 :author:    Jose Carlos Recuero
 :version:   0.1
@@ -21,13 +21,12 @@ __docformat__ = 'restructuredtext en'
 #
 # import std python modules
 #
-import random
+import collections
 
 #
 # import engine python modules
 #
-import loggerator
-import event
+#from tasker import Tasker
 
 
 ###############################################################################
@@ -63,70 +62,27 @@ import event
 
 #
 #------------------------------------------------------------------------------
-class Generator:
-    """ Generates random events.
+class Queuer(object):
+    """ Stores tasks.
     """
-
+    
     #--------------------------------------------------------------------------
-    def __init__(self, engine, name, cb=None, cbArgs=None, timeStart=1, timeEnd=100, limit=None):
-        """ Generator initialization method.
-        """
-        self.engine    = engine
-        self.counter   = 0
-        self.name      = name
-        self.timeStart = timeStart
-        self.timeEnd   = timeEnd
-        self.limit     = limit
-        self.cb        = cb
-        self.cbArgs    = cbArgs if cbArgs else ()
-        self.logger    = loggerator.getLoggerator('GENERATOR')
+    def __init__(self, maxLength=None):
+        self.queue = collections.deque([], maxLength)
+    
+    #--------------------------------------------------------------------------
+    def push(self, task):
+        self.queue.append(task)
+    
+    #--------------------------------------------------------------------------
+    def pop(self):
+        return self.queue.popleft()
+    
+    #--------------------------------------------------------------------------
+    def size(self):
+        return len(self.queue)
         
-    #--------------------------------------------------------------------------
-    def _getName(self):
-        """ Get name for a new generator event.
-        """
-        return '%s[%d]' % (self.name, self.counter)
         
-    #--------------------------------------------------------------------------
-    def _getTime(self):
-        """ Get timeout for a new generator event.
-        """
-        return random.randint(self.timeStart, self.timeEnd)
-        
-    #--------------------------------------------------------------------------
-    def _checkLimit(self):
-        """ Check if event limit has been reached.
-        """
-        return self.limit and self.counter < self.limit
-                
-    #--------------------------------------------------------------------------
-    def _createEvent(self):
-        ev = event.Event(self._getName(), self._getTime(), self.next)
-        self.logger.info('Generator : event : %s : %s' % (ev.name, ev.time))
-        self.engine.addEvent(ev)
-        self.counter += 1
-                
-    #--------------------------------------------------------------------------
-    def _call(self):
-        if self.cb:
-            self.cb(*self.cbArgs)
-                
-    #--------------------------------------------------------------------------
-    def start(self):
-        if not self.counter:
-            self._createEvent()
-                
-    #--------------------------------------------------------------------------
-    def next(self):
-        """ Generate a new event.
-        """
-        if self._checkLimit():
-            self._createEvent()
-            self._call()
-        else:
-            self.logger.warning('%s has reached the maximum number of events' % (self.name, ))
-
-
 ###############################################################################
 ##                  _
 ##  _ __ ___   __ _(_)_ __

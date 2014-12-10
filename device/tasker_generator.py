@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-"""servicer.py module.
+"""queue.py class generates events.
 
 :author:    Jose Carlos Recuero
 :version:   0.1
@@ -21,10 +21,14 @@ __docformat__ = 'restructuredtext en'
 #
 # import std python modules
 #
+import random
 
 #
 # import engine python modules
 #
+import loggerator
+import generator
+import tasker
 
 
 ###############################################################################
@@ -60,7 +64,31 @@ __docformat__ = 'restructuredtext en'
 
 #
 #------------------------------------------------------------------------------
+class TaskerGenerator(generator.Generator):
+    """ Generates Tasker events.
+    """
+
     #--------------------------------------------------------------------------
+    def __init__(self, engine, name, queue, timeStart=1, timeEnd=100, limit=None, taskStart=1, taskEnd=100):
+        """ Generator initialization method.
+        """
+        super(TaskerGenerator, self).__init__(engine, 
+                                              name, 
+                                              cb=self._taskerEvent, 
+                                              timeStart=timeStart,
+                                              timeEnd=timeEnd,
+                                              limit=limit)
+        self.queue     = queue
+        self.taskStart = taskStart
+        self.taskEnd   = taskEnd
+        self.logger    = loggerator.getLoggerator('TASK_GEN')
+
+    #--------------------------------------------------------------------------
+    def _taskerEvent(self):
+        task = tasker.Tasker('task:%s[%d]' % (self.name, self.counter), 
+                             random.randint(self.taskStart, self.taskEnd))
+        self.queue.push(task)
+        
 
 ###############################################################################
 ##                  _
@@ -71,3 +99,6 @@ __docformat__ = 'restructuredtext en'
 ##
 ###############################################################################
 #
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()

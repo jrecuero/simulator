@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-"""servicer.py module.
+"""servicer.py class that provides service to generated events.
 
 :author:    Jose Carlos Recuero
 :version:   0.1
@@ -71,3 +71,6 @@ __docformat__ = 'restructuredtext en'
 ##
 ###############################################################################
 #
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()

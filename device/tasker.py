@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-"""servicer.py module.
+"""tasker.py class keeps information for a task to be executed by a servicer.
 
 :author:    Jose Carlos Recuero
 :version:   0.1
@@ -60,7 +60,15 @@ __docformat__ = 'restructuredtext en'
 
 #
 #------------------------------------------------------------------------------
+class Tasker(object):
+    """ Keeps information for a given task to be executed by a servicer.
+    """
+    
     #--------------------------------------------------------------------------
+    def __init__(self, name, time):
+        self.name = name
+        self.time = time
+        
 
 ###############################################################################
 ##                  _
@@ -71,3 +79,6 @@ __docformat__ = 'restructuredtext en'
 ##
 ###############################################################################
 #
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()

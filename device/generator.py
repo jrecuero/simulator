@@ -1,10 +1,10 @@
 #! /usr/bin/env python
 
-"""event.py class required for the engine event.
+"""queue.py class generates events.
 
 :author:    Jose Carlos Recuero
 :version:   0.1
-:since:     12/07/2014
+:since:     12/09/2014
 
 """
 
@@ -21,10 +21,13 @@ __docformat__ = 'restructuredtext en'
 #
 # import std python modules
 #
+import random
 
 #
 # import engine python modules
 #
+import loggerator
+import event
 
 
 ###############################################################################
@@ -60,36 +63,68 @@ __docformat__ = 'restructuredtext en'
 
 #
 #------------------------------------------------------------------------------
-class Event(object):
-    """Event contains information regarding any simulation event.
+class Generator(object):
+    """ Generates random events.
     """
 
     #--------------------------------------------------------------------------
-    def __init__(self, name, time, cb, *cbArgs):
-        """ Event initialization method.
-        
-        :type name: string
-        :param name: Event name
-        
-        :type time: int
-        :param time: Simulation time when event should run
-        
-        :type cb: function
-        :param cb: Event callback
-        
-        :type cbArgs: list
-        :param cbArgs: Event callback parameters to be used
+    def __init__(self, engine, name, cb=None, cbArgs=None, timeStart=1, timeEnd=100, limit=None):
+        """ Generator initialization method.
         """
-        self.name    = name
-        self.time    = time
-        self.cb      = cb
-        self.cbArgs  = cbArgs
-
+        self.engine    = engine
+        self.counter   = 0
+        self.name      = name
+        self.timeStart = timeStart
+        self.timeEnd   = timeEnd
+        self.limit     = limit
+        self.cb        = cb
+        self.cbArgs    = cbArgs if cbArgs else ()
+        self.logger    = loggerator.getLoggerator('GENERATOR')
+        
     #--------------------------------------------------------------------------
-    def run(self):
-        """ Run event.
+    def _getName(self):
+        """ Get name for a new generator event.
         """
-        self.cb(*self.cbArgs)
+        return '%s[%d]' % (self.name, self.counter)
+        
+    #--------------------------------------------------------------------------
+    def _getTime(self):
+        """ Get timeout for a new generator event.
+        """
+        return random.randint(self.timeStart, self.timeEnd)
+        
+    #--------------------------------------------------------------------------
+    def _checkLimit(self):
+        """ Check if event limit has been reached.
+        """
+        return self.limit and self.counter < self.limit
+                
+    #--------------------------------------------------------------------------
+    def _createEvent(self):
+        ev = event.Event(self._getName(), self._getTime(), self.next)
+        self.logger.info('Generator : event : %s : %s' % (ev.name, ev.time))
+        self.engine.addEvent(ev)
+        self.counter += 1
+                
+    #--------------------------------------------------------------------------
+    def _call(self):
+        if self.cb:
+            self.cb(*self.cbArgs)
+                
+    #--------------------------------------------------------------------------
+    def start(self):
+        if not self.counter:
+            self._createEvent()
+                
+    #--------------------------------------------------------------------------
+    def next(self):
+        """ Generate a new event.
+        """
+        if self._checkLimit():
+            self._createEvent()
+            self._call()
+        else:
+            self.logger.warning('%s has reached the maximum number of events' % (self.name, ))
 
 
 ###############################################################################

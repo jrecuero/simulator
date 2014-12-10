@@ -28,7 +28,7 @@ import mock
 # import engine python modules
 #
 import engine
-import generator
+from device import generator
 
 ###############################################################################
 ##       _                     _       __ _       _ _   _
