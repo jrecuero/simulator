@@ -125,7 +125,7 @@ class Engine(object):
         while self.nextEvent():
             for ev in self.runEv:
                 self.simTime = ev.time
-                self.logger.info('Engine : run : %s at simtime:%s' % (ev.name, self.simTime))
+                #self.logger.info('Engine : run : %s at simtime:%s' % (ev.name, self.simTime))
                 ev.run()
 
 

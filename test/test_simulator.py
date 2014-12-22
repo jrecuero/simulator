@@ -54,9 +54,11 @@ class Test(unittest.TestCase):
         self.gen = TaskerGenerator(self.eng,
                                    'taskerGen',
                                    self.que,
-                                   taskStart=50.0,
-                                   taskEnd=200.0,
-                                   limit=10)
+                                   timeStart=1.0,
+                                   timeEnd=1000.0,
+                                   taskStart=1.0,
+                                   taskEnd=500.0,
+                                   limit=100)
         self.svc = Servicer(self.que, self.eng)
 
     #--------------------------------------------------------------------------
@@ -75,7 +77,7 @@ class Test(unittest.TestCase):
         self.eng.runEngine()
 
         # Expectations
-        pass
+        self.svc.reportStats()
 
 
 ###############################################################################

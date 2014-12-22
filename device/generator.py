@@ -109,7 +109,7 @@ class Generator(object):
     #--------------------------------------------------------------------------
     def _createEvent(self):
         ev = event.Event(self._getName(), self._getTime(), self.next)
-        self.logger.info('Generator : event : %s in %s' % (ev.name, ev.time))
+        #self.logger.info('Generator : event : %s in %s' % (ev.name, ev.time))
         self.engine.addEvent(ev)
         self.counter += 1
 

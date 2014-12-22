@@ -25,6 +25,7 @@ __docformat__ = 'restructuredtext en'
 #
 # import engine python modules
 #
+import loggerator
 
 
 ###############################################################################
@@ -72,16 +73,27 @@ class Tasker(object):
                       'popedAt': None,
                       'tasksAtPush': None,
                       'tasksAtPop': None}
+        self.logger = loggerator.getLoggerator('TASKER')
 
     #--------------------------------------------------------------------------
     def push(self, queue, engine):
         self.stats['tasksAtPush'] = queue.size()
         self.stats['pushedAt']    = engine.getSimTime()
+        #self.logger.info('task pushed at %s' % (self.stats['pushedAt'], ))
 
     #--------------------------------------------------------------------------
     def pop(self, queue, engine):
         self.stats['tasksAtPop'] = queue.size()
         self.stats['popedAt']    = engine.getSimTime()
+        #self.logger.info('task poped at %s' % (self.stats['popedAt'], ))
+
+    #--------------------------------------------------------------------------
+    def waitTime(self):
+        return self.stats['popedAt'] - self.stats['pushedAt']
+
+    #--------------------------------------------------------------------------
+    def waitQueue(self):
+        return self.stats['tasksAtPop']
 
 
 ###############################################################################
